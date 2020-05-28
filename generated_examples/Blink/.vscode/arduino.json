@@ -1,0 +1,5 @@
+{
+    "sketch": "Blink.ino",
+    "port": "/dev/tty.usbmodem14301",
+    "board": "arduino:avr:uno"
+}
