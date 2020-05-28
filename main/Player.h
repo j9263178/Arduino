@@ -108,12 +108,13 @@ class Player{
       int *noteDurations;
       bool LockState = false;
 
-      Player(){
-          Serial.println("BT is ready!");
+      void setup(){
+          pinMode(LED_BUILTIN, OUTPUT);
           BT.begin(38400);
+          Serial.println("BT is ready!");
           int storage_array[100];
           notein.setStorage(storage_array);
-      };
+      }
 
       void alarm(){
         for (int i=0;i<notein.size();i++){

@@ -2,5 +2,5 @@
     "board": "arduino:avr:uno",
     "sketch": "main.ino",
     "output": "/Users/joseph/Documents/ArduinoBuild_vscode",
-    "port": "/dev/tty.usbmodem14301"
+    "port": "/dev/tty.usbmodem14101"
 }
