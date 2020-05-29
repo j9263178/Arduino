@@ -1,16 +1,10 @@
-
-#include "Kalman.h"
-#include <Wire.h>
 #include <Math.h>
-#include <SoftwareSerial.h>
-#include <QueueArray.h>
 #include "signalCatcher.h"
 #include "Player.h"
 #include "MPU6050.h"
 
-int state = 0; // 0: locked, and ready to detect, 
-               // 1: unlocked, no alarming or motion detections
-static const int DELAYTIME = 2; //critical for determining the size of sample space
+//critical for determining the size of sample space
+static const int DELAYTIME = 2; 
 int delaytime = 0;
 
 signalCatcher sc;
@@ -27,25 +21,22 @@ void setup() {
 void loop() {
 
   py.parse();
+  sc.LockState = py.LockState;
 
   if(py.LockState){
-  
-    if (sc.needSample){
+    if (sc.alarm){
       py.alarm();
+      for(int i =0 ; i<py.notein.size();i++){
+        Serial.print(notein[i]);
+      }
+      sc.alarm=false;
     }
-
-    sc.evalAverageRss(mpu.getData());
-    
-    Serial.println("");  
-
-    modeMaster(2);
-
   }
 
-  delay(10);
+  sc.evalAverageRss(mpu.getData());
+  modeMaster(2);
+  delay(20);
 }
-
-//**********************************************************************
 
 void modeMaster(int mode){
   bool msg = false;
@@ -68,4 +59,3 @@ void modeMaster(int mode){
   }
 }
 
-//**********************************************************************

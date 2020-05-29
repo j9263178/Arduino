@@ -16,13 +16,15 @@ class signalCatcher{
 
         QueueArray <float> sampleSpace;
         float rssHistory[RECORD_PERIOD];
-        bool needSample = false;   
+        bool needSample = false;
+        bool alarm = false;
         float AverageRss = 0; 
         float rss = 0;
         int HisCur = 0;
         float last = 0;
         int sampleCur = 0;
         int test = 0;
+        bool LockState = false;
 
         signalCatcher(){
             //simply fill the sample space
@@ -55,6 +57,7 @@ class signalCatcher{
             sampleSpace.enqueue(AverageRss);
 
             if(needSample){
+                
                 //this "if" means that the peak triggered the sampling are put in the middle
                 if(sampleCur++ == sampleLength/2) {    
                     float vector[sampleLength];
@@ -85,14 +88,13 @@ class signalCatcher{
                 }
             }
 
-            else{
+            else if(LockState){
                 if(AverageRss - last > sampleThreshold and AverageRss > last) {
-                if(msg){
-                    Serial.println(" ");
-                    Serial.println("Start sample! ");
-                }
-                needSample = true;
-                test = 100;
+                    if(msg)
+                        Serial.println("Start sample! ");
+                    needSample = true;
+                    alarm = true;
+                    test = 100;
                 }
             }
 
@@ -103,15 +105,15 @@ class signalCatcher{
 
     private:
         PvAlign pva;
-        //ProtoData data;
+
         //record rss history to determine the average rss in a period
         bool recordRss(){ 
-        if (HisCur==RECORD_PERIOD){  //one period of record is done
-            HisCur = 0;
-            return 1;
+            if (HisCur==RECORD_PERIOD){  //one period of record is done
+                HisCur = 0;
+                return 1;
             }
-        rssHistory[HisCur++] = rss;
-        return 0;
+            rssHistory[HisCur++] = rss;
+            return 0;
         }
         
         void evalScore(float *vec){

@@ -107,6 +107,7 @@ class Player{
       Vector<int> notein;
       int *noteDurations;
       bool LockState = false;
+      // 0 = unLock , 1 = Lock , 2 = updateMusic
 
       void setup(){
           pinMode(LED_BUILTIN, OUTPUT);
@@ -128,26 +129,42 @@ class Player{
           if (Serial.available()) {
             BT.print((char)Serial.read());  //???
           }
-          
+
           if (BT.available()) {
             int input = BT.read();
-            Serial.println(input); 
-            if(input == 97) loadMelody();
-            else if(input == 98) unLock();
-            else if(input == 99) Lock();
+
+            if(input == 97) 
+              Lock();
+
+            else if(input == 98)
+              unLock();
+
+            else if(input == 99)
+              loadMelody();
           }
       }
 
       void loadMelody(){
-          Serial.println("Updating Music...");
+          Serial.println("Please input your music...");
           notein.clear();
-          while (BT.available()) {
-            int val = BT.read();
-            Serial.println(val); 
-            if(val != 13 && val !=10){
-              notein.push_back(val);
+
+          bool done = false;
+          while (!done) {
+            if(BT.available()){
+              int val = BT.read();
+              if(val == 65)
+                done = true;
+              else if(val != 13 && val !=10)
+                notein.push_back(val);
             }
           }
+
+          Serial.print("Uploaded! your music is : ");
+          for (int i=0; i<notein.size();i++){
+            Serial.print(notein[i]);
+            Serial.print(" ");
+          }
+
       }
 
       void unLock(){
