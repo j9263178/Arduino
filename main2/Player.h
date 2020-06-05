@@ -92,27 +92,89 @@
 #define NOTE_D8  4699
 #define NOTE_DS8 4978
 
+#include <SoftwareSerial.h> 
+#include <Vector.h>
+
+SoftwareSerial BT(10, 11); 
+
 class Player{
     public :
-
+      const int note[7]={NOTE_C4, NOTE_D4,NOTE_DS4 ,NOTE_E4, NOTE_F4, NOTE_G4, NOTE_A4, NOTE_B4};
+      int play = 0;
+      int count = 0;
+      bool ini = true;
+      int sh[5];
+      Vector<int> notein;
+      int *noteDurations;
+      bool LockState = false;
       // 0 = unLock , 1 = Lock , 2 = updateMusic
 
       void setup(){
+          pinMode(LED_BUILTIN, OUTPUT);
+          BT.begin(38400);
+          Serial.println("BT is ready!");
+          int storage_array[100];
+          notein.setStorage(storage_array);
       }
 
       void alarm(){
+        for (int i=0;i<notein.size();i++){
+          int a=(notein[i]-97)%7;
+          tone(8, note[a], 300);
+          delay(300);
+        }
       }
       
       void parse(){
+          if (Serial.available()) {
+            BT.print((char)Serial.read());  //???
+          }
+
+          if (BT.available()) {
+            int input = BT.read();
+
+            if(input == 97) 
+              Lock();
+
+            else if(input == 98)
+              unLock();
+
+            else if(input == 99)
+              loadMelody();
+          }
       }
 
       void loadMelody(){
+          Serial.println("Please input your music...");
+          notein.clear();
+
+          bool done = false;
+          while (!done) {
+            if(BT.available()){
+              int val = BT.read();
+              if(val == 65)
+                done = true;
+              else if(val != 13 && val !=10)
+                notein.push_back(val);
+            }
+          }
+
+          Serial.print("Uploaded! your music is : ");
+          for (int i=0; i<notein.size();i++){
+            Serial.print(notein[i]);
+            Serial.print(" ");
+          }
+
       }
 
       void unLock(){
+        Serial.println("unLocked!");
+        LockState = false;
       };
 
       void Lock(){
+        Serial.println("Locked!");
+        LockState = true;
       };
       
 };

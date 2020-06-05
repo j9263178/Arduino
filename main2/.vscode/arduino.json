@@ -1,6 +1,6 @@
 {
     "board": "arduino:avr:uno",
-    "sketch": "main.ino",
+    "sketch": "main2.ino",
     "output": "/Users/joseph/Documents/ArduinoBuild_vscode",
     "port": "/dev/tty.usbmodem14101"
 }
